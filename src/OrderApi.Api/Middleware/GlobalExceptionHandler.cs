@@ -53,6 +53,8 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         var traceId = httpContext.TraceIdentifier;
 
+        httpContext.Response.StatusCode = status;
+
         if (exception is Domain.Exceptions.ValidationException validationEx && validationEx.Errors.Count > 0)
         {
             var pd = new ValidationProblemDetails(validationEx.Errors)
@@ -65,8 +67,8 @@ public class GlobalExceptionHandler : IExceptionHandler
             };
             pd.Extensions["traceId"] = traceId;
 
-            httpContext.Response.StatusCode = status;
-            await httpContext.Response.WriteAsJsonAsync(pd, cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(pd,
+                options: null, contentType: "application/problem+json", cancellationToken);
             return true;
         }
 
@@ -86,8 +88,8 @@ public class GlobalExceptionHandler : IExceptionHandler
                 problem.Extensions[key] = value;
         }
 
-        httpContext.Response.StatusCode = status;
-        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(problem,
+            options: null, contentType: "application/problem+json", cancellationToken);
         return true;
     }
 
