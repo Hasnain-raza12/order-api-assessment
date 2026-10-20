@@ -69,7 +69,8 @@ public static class DbSeeder
 
             // Spread evenly across the last 60 days
             var daysAgo = (int)Math.Round(60.0 * idx / (orderSpecs.Length - 1));
-            var orderDate = now.AddDays(-daysAgo).AddHours(rng.Next(-12, 12));
+            // Negative offset only — avoids seeding orders with future timestamps
+            var orderDate = now.AddDays(-daysAgo).AddHours(rng.Next(-8, 0));
 
             var order = new Order
             {
